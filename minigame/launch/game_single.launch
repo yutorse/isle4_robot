@@ -1,0 +1,6 @@
+<launch>     
+  <include file="$(find minigame)/launch/game.launch">
+    <arg name="single_robot" value="true"/>
+    <arg name="r0_dummy"    default="false"/>
+  </include>  
+</launch>

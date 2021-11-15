@@ -1,0 +1,6 @@
+
+GlobalPlanner:                                  # Also see: http://wiki.ros.org/global_planner
+  use_dijkstra: true                            # Use dijkstra's algorithm. Otherwise, A*, default true
+  use_grid_path: false                          # Create a path that follows the grid boundaries. Otherwise, use a gradient descent method, default false
+  default_tolerance: 0.9
+  old_navfn_behavior: false

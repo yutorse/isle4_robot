@@ -1,0 +1,8 @@
+<launch>     
+  <include file="$(find minigame)/launch/game.launch">
+    <arg name="r0_dummy"    default="false"/>
+    <arg name="r1_dummy"    default="false"/>
+    <arg name="r2_dummy"    default="false"/>
+    <arg name="r3_dummy"    default="false"/>
+  </include>  
+</launch>

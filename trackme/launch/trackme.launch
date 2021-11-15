@@ -1,0 +1,42 @@
+<launch>
+
+  <arg name="robot_pkg"  default=""/>
+  <arg name="robot_node"  default=""/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="false"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>  
+
+  <group ns = "bb">
+    <param name="bb_description" command="$(find xacro)/xacro --inorder $(find trackme)/urdf/bb-9.urdf.xacro" />
+   
+    <node name="spawn_urdf_bb" pkg="gazebo_ros" type="spawn_model" args="-urdf -model bb-9 -x 3 -y 0 -z 0 -param bb_description" />
+    
+    <node name="bb_drive" pkg="trackme" type="bb_drive.py" />
+     
+  </group>
+  
+  <group ns = "robot">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find trackme)/urdf/turtlebot3_burger_camera_only.urdf.xacro color:=Gazebo/Blue " />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="robot" />
+    </node>
+    
+    <node name="spawn_urdf_robot" pkg="gazebo_ros" type="spawn_model" args="-urdf -model robot -x 0 -y 0 -z 0 -param robot_description" />
+    
+    <node name="static_transform_pub" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 /odom /robot/odom 10" />
+ 
+    <node name="robot_driver" pkg="$(arg robot_pkg)" type="$(arg robot_node)" unless="$(eval robot_node == '')" output = "screen"/>
+ 
+  </group>
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find trackme)/launch/rviz_config.rviz" />
+
+
+</launch>

@@ -1,0 +1,10 @@
+<launch>
+  <include file="$(find ghostbuster)/launch/gazebo_rviz.launch" />
+ 
+  <include file="$(find ghostbuster)/launch/localize.launch" />
+  
+  <include file="$(find ghostbuster)/launch/navigate.launch" />
+  
+  <node pkg="ghostbuster" type="ghost_logic.py" name="ghost_logic" output="screen" required="true" />
+
+</launch>

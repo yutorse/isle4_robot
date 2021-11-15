@@ -1,0 +1,10 @@
+<launch>
+  <arg name="robot"  default="robo0"/>
+  <arg name="pkg"  default="minigame"/>
+  <arg name="node"  default="dummy_robot"/>
+  
+  <group ns="$(arg robot)">
+    <node name="dummy" pkg="$(arg pkg)" type="$(arg node)" output="screen" />
+  </group>
+
+</launch>

@@ -1,0 +1,111 @@
+<launch>
+  <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="r0"  default="robo0"/>
+  <arg name="r1"  default="robo1"/>
+  <arg name="r2"  default="robo2"/>
+  <arg name="r3"  default="robo3"/>
+
+
+  <arg name="r0_x_pos" default="3"/>
+  <arg name="r0_y_pos" default="-3"/>
+  <arg name="r0_z_pos" default=" 0"/>
+  <arg name="r0_yaw"   default=" 2.356"/>
+
+  <arg name="r1_x_pos" default="3"/>
+  <arg name="r1_y_pos" default="3"/>
+  <arg name="r1_z_pos" default=" 0"/>
+  <arg name="r1_yaw"   default=" -2.356"/>
+
+  <arg name="r2_x_pos" default=" -3"/>
+  <arg name="r2_y_pos" default=" 3"/>
+  <arg name="r2_z_pos" default=" 0"/>
+  <arg name="r2_yaw"   default=" -0.785"/>
+
+  <arg name="r3_x_pos" default=" -3"/>
+  <arg name="r3_y_pos" default=" -3"/>
+  <arg name="r3_z_pos" default=" 0"/>
+  <arg name="r3_yaw"   default=" 0.785"/>
+
+  <arg name="r0_dummy"    default="true"/>
+  <arg name="r1_dummy"    default="true"/>
+  <arg name="r2_dummy"    default="true"/>
+  <arg name="r3_dummy"    default="true"/>
+  
+  <arg name="single_robot"  default="false"/>
+
+  <arg name="gui"    default="true"/>
+     
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find minigame)/worlds/stage.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+    
+    <arg name="extra_gazebo_args" value="/robo0/cmd_vel:=/r0_vel /robo1/cmd_vel:=/r1_vel /robo2/cmd_vel:=/r2_vel /robo3/cmd_vel:=/r3_vel" />
+  </include>  
+
+  <group ns = "$(arg r0)">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find minigame)/urdf/turtlebot3_burger_camera_only.urdf.xacro color:=Gazebo/Blue " />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="$(arg r0)" />
+    </node>
+    
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg r0) -x $(arg r0_x_pos) -y $(arg r0_y_pos) -z $(arg r0_z_pos) -Y $(arg r0_yaw) -param robot_description" />
+    
+    <node if="$(arg r0_dummy)" name="dummy" pkg="minigame" type="dummy_robot_cpp" />
+  </group>
+
+  <group ns = "$(arg r1)" unless="$(arg single_robot)">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find minigame)/urdf/turtlebot3_burger_camera_only.urdf.xacro color:=Gazebo/Purple " />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="$(arg r1)" />
+    </node>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg r1) -x $(arg r1_x_pos) -y $(arg r1_y_pos) -z $(arg r1_z_pos) -Y $(arg r1_yaw) -param robot_description" />
+    
+    <node if="$(arg r1_dummy)" name="dummy" pkg="minigame" type="dummy_robot_cpp" />
+  </group>
+
+  <group ns = "$(arg r2)" unless="$(arg single_robot)">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find minigame)/urdf/turtlebot3_burger_camera_only.urdf.xacro color:=Gazebo/Turquoise " />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="$(arg r2)" />
+    </node>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg r2) -x $(arg r2_x_pos) -y $(arg r2_y_pos) -z $(arg r2_z_pos) -Y $(arg r2_yaw) -param robot_description" />
+    
+    <node if="$(arg r2_dummy)" name="dummy" pkg="minigame" type="dummy_robot_cpp" />
+  </group>
+  
+  <group ns = "$(arg r3)" unless="$(arg single_robot)">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find minigame)/urdf/turtlebot3_burger_camera_only.urdf.xacro color:=Gazebo/Green " />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="$(arg r3)" />
+    </node>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg r3) -x $(arg r3_x_pos) -y $(arg r3_y_pos) -z $(arg r3_z_pos) -Y $(arg r3_yaw) -param robot_description" />
+    
+    <node if="$(arg r3_dummy)" name="dummy" pkg="minigame" type="dummy_robot_cpp" />
+  </group>
+  
+  <node pkg="tf" type="static_transform_publisher" name="r0_odom_broadcaster" args="0 0 0 0 0 0 /odom /$(arg r0)/odom 100" />
+  <node pkg="tf" type="static_transform_publisher" name="r1_odom_broadcaster" args="0 0 0 0 0 0 /odom /$(arg r1)/odom 100" />
+  <node pkg="tf" type="static_transform_publisher" name="r2_odom_broadcaster" args="0 0 0 0 0 0 /odom /$(arg r2)/odom 100" />
+  <node pkg="tf" type="static_transform_publisher" name="r3_odom_broadcaster" args="0 0 0 0 0 0 /odom /$(arg r3)/odom 100" />
+  
+  <node name="red_ball" pkg="gazebo_ros" type="spawn_model" args="-urdf -model red_ball -x 5 -y 5 -z 0 -file $(find minigame)/urdf/ball.urdf" />
+
+  <node name="logic" pkg="minigame" type="game_logic.py" output="screen" required="true"/>
+
+
+</launch>
